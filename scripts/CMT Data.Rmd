@@ -95,7 +95,7 @@ ggplot(cmt, aes(referral_month)) +
 ?scale_x_discrete
 
 ggplot(cmt, aes(referral_month)) +
-  geom_bar(aes(fill = referral_year), width = 1) +
+  geom_bar(aes(fill = referral_year), color = "black", width = 1) +
   theme_minimal() +
   coord_flip() +
   scale_x_discrete(limits = rev(levels(cmt$referral_month))) +
@@ -106,7 +106,7 @@ ggplot(cmt, aes(referral_month)) +
        title = "Number of CMT Referrals by Month")
 
 ggplot(cmt, aes(referral_month, fill = referral_year)) +
-  geom_bar(position = "fill", alpha = 0.9, width = 1) +
+  geom_bar(position = "fill", color = "black", alpha = 0.9, width = 1) +
   theme_minimal() +
   coord_flip(expand = FALSE) +
   labs(x = "Referral Month",
@@ -170,13 +170,13 @@ cmt$school <- factor(cmt$school, levels = c("Creswell H.S.",
                                             "Pleasant Hill H.S.",
                                             "North Eugene H.S.",
                                             "Sheldon H.S.",
+                                            "Churchill H.S.",
                                             "South Eugene H.S.",
                                             "Springfield H.S.",
-                                            "Churchill H.S.",
                                             "College Student",
-                                             "Thurston H.S.",
-                                              "Willamette H.S.",
-                                              "Other"))
+                                            "Thurston H.S.",
+                                             "Willamette H.S.",
+                                             "Other"))
 
 
 ggplot(cmt, aes(school)) +
