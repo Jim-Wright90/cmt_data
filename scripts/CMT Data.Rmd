@@ -164,45 +164,15 @@ ggplot(cmt, aes(age)) +
        title = "Number of CMT Referrals by Age Range")
 
 
-cmt$school <- factor(cmt$school, levels = c("Creswell H.S.", 
-                                            "Cottage Grove H.S.",
-                                            "Elmira H.S.",
-                                            "Pleasant Hill H.S.",
-                                            "North Eugene H.S.",
-                                            "Sheldon H.S.",
-                                            "Churchill H.S.",
-                                            "South Eugene H.S.",
-                                            "Springfield H.S.",
-                                            "College Student",
-                                            "Thurston H.S.",
-                                             "Willamette H.S.",
-                                             "Other"))
-
-
-ggplot(cmt, aes(school)) +
-  geom_bar(fill = "cornflowerblue") +
-  theme_minimal() +
-  coord_flip() +
-  scale_x_discrete(limits = rev(levels(cmt$school))) +
-  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
-  labs(x = "Referral School",
+ggplot(cmt, aes(fct_rev(fct_infreq(school)))) +
+  geom_bar(fill = "#56B4E9",
+           color = "white",
+           alpha = 0.9) +
+  coord_flip() + 
+   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
+   labs(x = "Referral School",
        y = "Total",
        title = "Number of CMT Referrals per School")
-
-
-library(forcats)
-
-cmt %>% 
-  mutate(school = fct_reorder(school)) %>% 
-  ggplot(cmt, aes(school)) +
-  geom_bar(stat = "identity", fill = "cornflowerblue") +
-  theme_minimal() +
-  coord_flip() +
-  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
-  labs(x = "Referral School",
-       y = "Total",
-       title = "Number of CMT Referrals per School")
-
 ```
 
 
