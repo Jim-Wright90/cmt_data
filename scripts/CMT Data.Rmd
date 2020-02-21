@@ -16,6 +16,8 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 library(ggrepel)
+library(colorblindr)
+library(gt)
 theme_set(theme_minimal())
 opts_chunk$set(echo = FALSE,
                fig.width = 6.5,
@@ -63,15 +65,22 @@ cmt_descriptives_month <- cmt %>%
   summarize(n=n())
 
 knitr::kable(cmt_descriptives_month,
-             caption = "Total Number of CMT Referrals by Month") %>% 
+             caption = "Total Number of CMT Referrals by Month",
+             col.names = c("Referral Month",
+                           "Sex",
+                           "Total")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
 
 cmt_descriptives_year <- cmt %>% 
   group_by(referral_year, sex) %>% 
   summarize(n=n())
 
 knitr::kable(cmt_descriptives_year,
-             caption = "Total Number of CMT Referrals by Year") %>% 
+             caption = "Total Number of CMT Referrals by Year",
+             col.names = c("Referral Year",
+                           "Sex",
+                           "Total")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 cmt_descriptives_school <- cmt %>% 
@@ -79,11 +88,14 @@ cmt_descriptives_school <- cmt %>%
   summarize(n=n())
 
 knitr::kable(cmt_descriptives_school,
-             caption = "Total Number of CMT Referrals per School") %>% 
+             caption = "Total Number of CMT Referrals per School",
+             col.names = c("School",
+                           "Total")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 ggplot(cmt, aes(referral_month)) +
   geom_bar(aes(fill = referral_year)) +
+  scale_fill_OkabeIto() +
   theme_minimal() +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
    theme(axis.text.x = element_text(angle = 45)) +
@@ -92,12 +104,11 @@ ggplot(cmt, aes(referral_month)) +
        fill = "Referral Year",
        title = "Number of CMT Referrals by Month")
 
-?scale_x_discrete
-
 ggplot(cmt, aes(referral_month)) +
   geom_bar(aes(fill = referral_year), color = "black", width = 1) +
-  theme_minimal() +
+  theme(panel.grid.major = element_line(color = "gray40")) +
   coord_flip() +
+  scale_fill_OkabeIto() +
   scale_x_discrete(limits = rev(levels(cmt$referral_month))) +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
   labs(x = "Referral Month",
@@ -107,12 +118,13 @@ ggplot(cmt, aes(referral_month)) +
 
 ggplot(cmt, aes(referral_month, fill = referral_year)) +
   geom_bar(position = "fill", color = "black", alpha = 0.9, width = 1) +
-  theme_minimal() +
+  scale_fill_OkabeIto() +
+  theme(panel.grid.major = element_line(color = "black")) +
   coord_flip(expand = FALSE) +
   labs(x = "Referral Month",
-       y = "Total",
+       y = "Percent",
        fill = "Referral Year",
-       title = "Number of CMT Referrals by Month")
+       title = "Percentage of CMT Referrals by Month")
 
 cmt_count <- cmt %>% 
   count(referral_month)
@@ -122,20 +134,26 @@ ggplot(cmt_count, aes(referral_month, n, group = 1)) +
             alpha = 0.3) +
   geom_line(lwd = 1.6, 
             color = "gray40") +
+  geom_point(color = "blue",
+             size = 3) +
   geom_smooth(color = "magenta",
               lwd = 1.4,
               se = FALSE) +
+  geom_text_repel(aes(label = n, group = 1)) +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
    theme(axis.text.x = element_text(angle = 45)) +
   labs(x = "Referral Month",
        y = "Total",
-       title = "Number of CMT Referrals by Month")
+       title = "CMT Referrals by Month")
 
 ggplot(cmt_count, aes(referral_month, n, group = 1)) +
   geom_line(lwd = 1.6, 
             color = "gray40") +
   geom_point(size = 3,
              color = "blue") +
+  geom_text_repel(aes(label = n, group = 1),
+                  size = 5) +
+  scale_y_log10() +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
    theme(axis.text.x = element_text(angle = 45)) +
   labs(x = "Referral Month",
@@ -145,6 +163,7 @@ ggplot(cmt_count, aes(referral_month, n, group = 1)) +
 
 ggplot(cmt, aes(referral_year)) +
   geom_bar(aes(fill = sex), position = "dodge") +
+  scale_fill_OkabeIto() +
   theme_minimal() +
   coord_flip() +
   scale_x_discrete(limits = rev(levels(cmt$referral_year))) +
@@ -157,6 +176,7 @@ ggplot(cmt, aes(referral_year)) +
 
 ggplot(cmt, aes(age)) +
   geom_bar(aes(fill = sex), position = "dodge") +
+  scale_fill_OkabeIto() +
   theme_minimal() +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
   labs(x = "Client Age",
@@ -212,6 +232,7 @@ cmt_discipline_referral$status <- factor(cmt_discipline_referral$status, levels 
 
 ggplot(cmt_discipline_referral, aes(x = referral)) +
   geom_bar(aes(fill = status), position = "dodge") +
+  scale_fill_OkabeIto() +
   theme_minimal() +
   coord_flip() +
   scale_x_discrete(limits = rev(levels(cmt_discipline_referral$referral))) +
