@@ -69,7 +69,7 @@ knitr::kable(cmt_descriptives_month,
              col.names = c("Referral Month",
                            "Sex",
                            "Total")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 
 cmt_descriptives_year <- cmt %>% 
@@ -81,7 +81,10 @@ knitr::kable(cmt_descriptives_year,
              col.names = c("Referral Year",
                            "Sex",
                            "Total")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% 
+  row_spec(1, color = "white", background = "#D7261E") %>% 
+  row_spec(3, color = "white", background = "#D7261E") %>% 
+  row_spec(5, color = "white", background = "#D7261E")
 
 cmt_descriptives_school <- cmt %>% 
   group_by(school) %>% 
@@ -95,15 +98,19 @@ knitr::kable(cmt_descriptives_school,
 
 ggplot(cmt, aes(referral_month)) +
   geom_bar(aes(fill = referral_year)) +
-  scale_fill_OkabeIto() +
-  geom_text(aes(label = ..count..), stat = "count", nudge_y = -0.5) +
+  scale_fill_brewer(palette = "Dark2") +
+  geom_text(aes(label = ..count..), 
+            stat = "count", 
+            nudge_y = -0.5,
+            color = "white") +
   theme_minimal() +
   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
   theme(axis.text.x = element_text(angle = 45)) +
   labs(x = "Month",
        y = "Total",
        fill = "Referral Year",
-       title = "Number of CMT Referrals by Month")  
+       title = "Number of CMT Referrals by Month") 
+
 
 ggplot(cmt, aes(referral_month)) +
   geom_bar(aes(fill = referral_year), color = "black", width = 1) +
@@ -242,7 +249,7 @@ cmt_discipline_referral$status <- factor(cmt_discipline_referral$status, levels 
 
 ggplot(cmt_discipline_referral, aes(x = referral)) +
   geom_bar(aes(fill = status), position = "dodge") +
-  scale_fill_OkabeIto() +
+  scale_fill_brewer(palette = "Set2") +
   theme_minimal() +
   coord_flip() +
   scale_x_discrete(limits = rev(levels(cmt_discipline_referral$referral))) +
