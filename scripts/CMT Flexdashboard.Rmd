@@ -1,0 +1,144 @@
+---
+title: "CMT Data"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(rio)
+library(here)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(ggrepel)
+library(colorblindr)
+library(gt)
+library(plotly)
+library(reactable)
+
+opts_chunk$set(echo = FALSE,
+               fig.width = 6.5,
+               fig.height = 8)
+
+theme_set(theme_minimal(15))
+
+```
+
+
+```{r load-data, fig.width = 10, fig.height = 10, echo = FALSE, include=FALSE}
+cmt <- import(here("data", "cmt_data.sav"),
+               setclass = "tbl_df") %>% 
+  characterize() %>% 
+  janitor::clean_names() 
+
+head(cmt)
+
+cmt <- cmt %>% 
+  rename(HEDCO = hedco_referral,
+         PT = pt_referral,
+         STRONG = psych_referral,
+         CBIRT = cbirt_referral,
+         Neurology = neuro_referral)
+
+
+cmt$referral_month <- factor(cmt$referral_month, levels = c("January",
+                                                            "February",
+                                                            "March",
+                                                            "April",
+                                                            "May",
+                                                            "June",
+                                                            "July",
+                                                            "August",
+                                                            "September",
+                                                            "October",
+                                                            "November",
+                                                            "December"))
+
+cmt$referral_year <- factor(cmt$referral_year, levels = c("2018", "2019", "2020"))
+
+```
+
+Column {data-height=1000}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r month plot}
+
+plot_1 <- ggplot(cmt, aes(referral_month)) +
+  geom_bar(aes(fill = referral_year)) +
+  scale_fill_brewer(palette = "Dark2") +
+  geom_text(aes(label = ..count..), 
+            stat = "count", 
+            nudge_y = -0.5,
+            color = "white") +
+  theme_minimal() +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(x = "Month",
+       y = "Total",
+       fill = "Referral Year",
+       title = "Number of CMT Referrals by Month") 
+
+ggplotly(plot_1)
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r sex plot}
+
+plot_2 <- ggplot(cmt, aes(referral_year)) +
+  geom_bar(aes(fill = sex), position = "dodge") +
+  scale_fill_OkabeIto() +
+  geom_text(aes(label = ..count..), stat = "count", nudge_y = -0.5) +
+  theme_minimal() +
+  coord_flip() +
+  scale_x_discrete(limits = rev(levels(cmt$referral_year))) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x = "Referral Year",
+       y = "Total",
+       fill = "Sex",
+       title = "Number of CMT Referrals per Year by Sex")
+
+ggplotly(plot_2)
+```
+
+### Chart C
+
+```{r referral status plot}
+cmt_discipline_referral <- cmt %>% 
+  pivot_longer(cols = c("HEDCO",
+                        "PT",
+                        "STRONG",
+                        "CBIRT",
+                        "Neurology"),
+               names_to = "referral",
+               values_to = "status")
+
+cmt_discipline_referral$status <- factor(cmt_discipline_referral$status, levels = c("Yes",
+                                                                                    "No"))
+
+plot_3 <- ggplot(cmt_discipline_referral, aes(x = referral)) +
+  geom_bar(aes(fill = status), position = "dodge") +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal() +
+  coord_flip() +
+  scale_x_discrete(limits = rev(levels(cmt_discipline_referral$referral))) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x = "Referral Discipline", 
+       y = "Total",
+       title = "Referral Status for Clients Enterting CMT Tracking",
+       fill = "Referral Status")
+
+ggplotly(plot_3)
+
+```
+
