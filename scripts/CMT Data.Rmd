@@ -71,6 +71,13 @@ knitr::kable(cmt_descriptives_month,
                            "Total")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
+month_table <- cmt %>% 
+  group_by(referral_month, sex) %>% 
+  rename("Referral Month" = referral_month,
+         "Sex" = sex)
+
+reactable(month_table)
+
 
 cmt_descriptives_year <- cmt %>% 
   group_by(referral_year, sex) %>% 
@@ -168,12 +175,15 @@ ggplot(cmt_count, aes(referral_month, n, group = 1)) +
   labs(x = "Referral Month",
        y = "Total",
        title = "Number of CMT Referrals by Month")
-  
 
-ggplot(cmt, aes(referral_year)) +
-  geom_bar(aes(fill = sex), position = "dodge") +
+pd <- position_dodge(width = 1)  
+
+cmt %>% 
+  count(sex, referral_year) %>% 
+ggplot(aes(referral_year, n)) +
+  geom_col(aes(fill = sex), position = pd) +
   scale_fill_OkabeIto() +
-  geom_text(aes(label = ..count..), stat = "count", nudge_y = -0.5) +
+  geom_text(aes(label = n, group = sex), position = pd) +
   theme_minimal() +
   coord_flip() +
   scale_x_discrete(limits = rev(levels(cmt$referral_year))) +

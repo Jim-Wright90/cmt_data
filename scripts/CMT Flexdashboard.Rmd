@@ -27,7 +27,12 @@ theme_set(theme_minimal(15))
 
 ```
 
+# Month and Year Data 
 
+Description of Data {.sidebar}
+--------
+
+This data has been collected from January 2018 to the present through collaboration of the Eugene Youth Concussion Management Team (CMT) 
 ```{r load-data, fig.width = 10, fig.height = 10, echo = FALSE, include=FALSE}
 cmt <- import(here("data", "cmt_data.sav"),
                setclass = "tbl_df") %>% 
@@ -84,9 +89,13 @@ plot_1 <- ggplot(cmt, aes(referral_month)) +
        title = "Number of CMT Referrals by Month") 
 
 ggplotly(plot_1)
+
+cmt_descriptives_month <- cmt %>% 
+  group_by(referral_month, sex) %>% 
+  summarize(n=n())
 ```
 
-Column {data-width=500}
+Column {.tabset data-width=500}
 -----------------------------------------------------------------------
 
 ### Yearly Referrals
@@ -109,6 +118,23 @@ plot_2 <- ggplot(cmt, aes(referral_year)) +
 
 ggplotly(plot_2)
 ```
+
+### Month Referral Table
+```{r month table}
+cmt_descriptives_month <- cmt %>% 
+  group_by(referral_month, sex) %>% 
+  summarize(n=n())
+
+knitr::kable(cmt_descriptives_month,
+             caption = "Total Number of CMT Referrals by Month",
+             col.names = c("Referral Month",
+                           "Sex",
+                           "Total")) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
+# Referral Stats to CMT Members
 
 ### CMT Referral Status
 
