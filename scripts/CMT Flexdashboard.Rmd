@@ -64,7 +64,7 @@ cmt$referral_year <- factor(cmt$referral_year, levels = c("2018", "2019", "2020"
 Column {data-height=1000}
 -----------------------------------------------------------------------
 
-### Chart A
+### Monthly Referrals
 
 ```{r month plot}
 
@@ -89,7 +89,7 @@ ggplotly(plot_1)
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Chart B
+### Yearly Referrals
 
 ```{r sex plot}
 
@@ -110,7 +110,7 @@ plot_2 <- ggplot(cmt, aes(referral_year)) +
 ggplotly(plot_2)
 ```
 
-### Chart C
+### CMT Referral Status
 
 ```{r referral status plot}
 cmt_discipline_referral <- cmt %>% 
@@ -139,6 +139,5 @@ plot_3 <- ggplot(cmt_discipline_referral, aes(x = referral)) +
        fill = "Referral Status")
 
 ggplotly(plot_3)
-
 ```
 
