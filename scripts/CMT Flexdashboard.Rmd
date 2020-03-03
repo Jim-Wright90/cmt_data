@@ -66,18 +66,19 @@ cmt$referral_year <- factor(cmt$referral_year, levels = c("2018", "2019", "2020"
 
 ```
 
-Column {data-height=1000}
+Column {.tabset data-height=1000}
 -----------------------------------------------------------------------
 
-### Monthly Referrals
+### Month Referrals Bar Graph 
 
-```{r month plot}
+```{r month plot 1}
 
 plot_1 <- ggplot(cmt, aes(referral_month)) +
   geom_bar(aes(fill = referral_year)) +
   scale_fill_brewer(palette = "Dark2") +
   geom_text(aes(label = ..count..), 
             stat = "count", 
+            size = 4,
             nudge_y = -0.5,
             color = "white") +
   theme_minimal() +
@@ -95,30 +96,6 @@ cmt_descriptives_month <- cmt %>%
   summarize(n=n())
 ```
 
-Column {.tabset data-width=500}
------------------------------------------------------------------------
-
-### Yearly Referrals
-
-```{r sex plot}
-
-plot_2 <- ggplot(cmt, aes(referral_year)) +
-  geom_bar(aes(fill = sex), position = "dodge") +
-  scale_fill_OkabeIto() +
-  geom_text(aes(label = ..count..), stat = "count", nudge_y = -0.5) +
-  theme_minimal() +
-  coord_flip() +
-  scale_x_discrete(limits = rev(levels(cmt$referral_year))) +
-  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
-  guides(fill = guide_legend(reverse = TRUE)) +
-  labs(x = "Referral Year",
-       y = "Total",
-       fill = "Sex",
-       title = "Number of CMT Referrals per Year by Sex")
-
-ggplotly(plot_2)
-```
-
 ### Month Referral Table
 ```{r month table}
 cmt_descriptives_month <- cmt %>% 
@@ -134,7 +111,121 @@ knitr::kable(cmt_descriptives_month,
 
 ```
 
-# Referral Stats to CMT Members
+### Month Referrals Line Plot
+```{r month line plot}
+cmt_count <- cmt %>% 
+  count(referral_month)
+
+ggplot(cmt_count, aes(referral_month, n, group = 1)) +
+  geom_area(fill = "cornflowerblue",
+            alpha = 0.3) +
+  geom_line(lwd = 1.6, 
+            color = "gray40") +
+  geom_point(color = "blue",
+             size = 3) +
+  geom_smooth(color = "magenta",
+              lwd = 1.4,
+              se = FALSE) +
+  geom_text_repel(aes(label = n, group = 1)) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
+   theme(axis.text.x = element_text(angle = 45)) +
+  labs(x = "Referral Month",
+       y = "Total",
+       title = "CMT Referrals by Month")
+
+```
+
+Column {.tabset data-width=500}
+-----------------------------------------------------------------------
+
+### Year Referrals
+
+```{r sex plot}
+
+pd <- position_dodge(width = 1) 
+
+
+cmt %>% 
+ count(sex, referral_year) %>% 
+ ggplot(aes(referral_year, n)) +
+  geom_col(aes(fill = sex), position = pd) +
+  scale_fill_OkabeIto() +
+  geom_text(aes(label = n, group = sex), 
+            position = pd, 
+            size = 5) +
+  theme_minimal() +
+  coord_flip() +
+  scale_x_discrete(limits = rev(levels(cmt$referral_year))) +
+  theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x = "Referral Year",
+       y = "Total",
+       fill = "Sex",
+       title = "Number of CMT Referrals per Year by Sex")
+
+
+```
+
+### Year Referral Table
+```{r referral year table} 
+cmt_descriptives_year <- cmt %>% 
+  group_by(referral_year, sex) %>% 
+  summarize(n=n())
+
+knitr::kable(cmt_descriptives_year,
+             caption = "Total Number of CMT Referrals by Year",
+             col.names = c("Referral Year",
+                           "Sex",
+                           "Total")) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% 
+  row_spec(1, color = "white", background = "#D7261E") %>% 
+  row_spec(3, color = "white", background = "#D7261E") %>% 
+  row_spec(5, color = "white", background = "#D7261E")
+
+```
+
+
+# School Referrals
+
+Column {.tabset data-width=750}
+-----------------------------------------------------------------------
+
+
+### School Referral Plot
+```{r school referral plot}
+ggplot(cmt, aes(fct_rev(fct_infreq(school)))) +
+  geom_bar(fill = "#56B4E9",
+           color = "white",
+           alpha = 0.9) +
+   geom_text(aes(label = ..count..), stat = "count", 
+            size = 4,
+            nudge_y = -0.7,
+            color = "white") +
+  facet_wrap(~sex, ncol = 1) +
+  coord_flip() + 
+   theme(plot.title = element_text(color = "black", size = 12, face = "bold", hjust = 0.5)) +
+   labs(x = "Referral School",
+       y = "Total",
+       title = "Number of CMT Referrals per School")
+
+```
+
+### School Referral Table
+```{r school referral table}
+cmt_descriptives_school <- cmt %>% 
+  group_by(school) %>% 
+  summarize(n=n())
+
+knitr::kable(cmt_descriptives_school,
+             caption = "Total Number of CMT Referrals per School",
+             col.names = c("School",
+                           "Total")) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+```
+
+
+# CMT Referral Stats
 
 ### CMT Referral Status
 
@@ -164,6 +255,7 @@ plot_3 <- ggplot(cmt_discipline_referral, aes(x = referral)) +
        title = "Referral Status for Clients Enterting CMT Tracking",
        fill = "Referral Status")
 
-ggplotly(plot_3)
+ggplotly(plot_3, tooltip = "all")
+
 ```
 
