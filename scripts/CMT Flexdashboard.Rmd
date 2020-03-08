@@ -3,8 +3,6 @@ title: "CMT Data"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
-    social: menu
-    source_code: embed
     vertical_layout: scroll
 ---
 
@@ -22,10 +20,10 @@ library(plotly)
 library(reactable)
 
 opts_chunk$set(echo = FALSE,
-               fig.width = 5,
-               fig.height = 6)
+               fig.width = 6.5,
+               fig.height = 8)
 
-theme_set(theme_minimal(8))
+theme_set(theme_minimal(15))
 
 ```
 
@@ -68,7 +66,7 @@ cmt$referral_year <- factor(cmt$referral_year, levels = c("2018", "2019", "2020"
 
 ```
 
-Column {.tabset data-height=800}
+Column {.tabset data-height=1000}
 -----------------------------------------------------------------------
 
 ### Month Referrals Bar Graph 
@@ -88,7 +86,7 @@ plot_1 <- ggplot(cmt, aes(referral_month)) +
   theme(axis.text.x = element_text(angle = 45)) +
   labs(x = "Month",
        y = "Total",
-       fill = "Referral \nYear",
+       fill = "Referral Year",
        title = "Number of CMT Referrals by Month") 
 
 ggplotly(plot_1)
@@ -255,7 +253,7 @@ plot_3 <- ggplot(cmt_discipline_referral, aes(x = referral)) +
   labs(x = "Referral Discipline", 
        y = "Total",
        title = "Referral Status for Clients Enterting CMT Tracking",
-       fill = "Referral \nStatus")
+       fill = "Referral Status")
 
 ggplotly(plot_3, tooltip = "all")
 
